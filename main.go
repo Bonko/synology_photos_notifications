@@ -13,11 +13,13 @@ import (
 )
 
 /*
+-- config --
+rootpath:
 users:
 	- name:
       email:
 */
- */
+
 //type DirInfo *map[string][]FileInfo
 
 type FileInfo struct {
@@ -29,12 +31,6 @@ var filesByOwner = make(map[string][]FileInfo)
 
 func main() {
 	path := os.Getenv("PHOTO_DIR")
-
-	//files, _ := ioutil.ReadDir("./testdata")
-	//fmt.Println(len(files))
-	//
-	//files2, _ := os.ReadDir("./testdata")
-	//fmt.Println(len(files2))
 
 	err := filepath.WalkDir(path, files)
 	if err != nil {
