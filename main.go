@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/fs"
 	"log"
@@ -11,15 +12,20 @@ import (
 	"syscall"
 )
 
+/*
+users:
+	- name:
+      email:
+*/
+ */
 //type DirInfo *map[string][]FileInfo
 
 type FileInfo struct {
-	Dir   string
-	Name  string
-	Owner string
+	Dir  string
+	Name string
 }
 
-var fi []FileInfo
+var filesByOwner = make(map[string][]FileInfo)
 
 func main() {
 	path := os.Getenv("PHOTO_DIR")
@@ -35,8 +41,11 @@ func main() {
 		log.Println(err)
 	}
 
-	fmt.Println(fi)
-	fmt.Println(len(fi))
+	fmt.Println(filesByOwner["bonko"])
+	fmt.Println(len(filesByOwner["bonko"]))
+
+	newFiles(path, "bonko")
+
 }
 
 func files(path string, di fs.DirEntry, err error) error {
@@ -49,11 +58,11 @@ func files(path string, di fs.DirEntry, err error) error {
 	}
 
 	current := FileInfo{
-		Dir:   filepath.Dir(path),
-		Name:  filepath.Base(path),
-		Owner: owner,
+		Dir:  filepath.Dir(path),
+		Name: filepath.Base(path),
 	}
-	fi = append(fi, current)
+
+	filesByOwner[owner] = append(filesByOwner[owner], current)
 
 	return nil
 }
@@ -68,4 +77,37 @@ func fileOwner(di fs.DirEntry) (string, error) {
 	u := strconv.FormatUint(uint64(uid), 10)
 	usr, err := user.LookupId(u)
 	return usr.Username, nil
+}
+
+func newFiles(path string, owner string) {
+	current := len(filesByOwner[owner])
+	lastNumFileName := fmt.Sprintf("%s/last_num_files_%s", path, owner)
+	last, err := readIntFromFile(lastNumFileName)
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
+	if current > last {
+		fmt.Printf("%d new files created by %s", current, owner)
+	}
+}
+
+func readIntFromFile(path string) (int, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return 0, err
+	}
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanWords)
+	var result []int
+	for scanner.Scan() {
+		x, err := strconv.Atoi(scanner.Text())
+
+		if err != nil {
+			return 0, err
+		}
+		result = append(result, x)
+	}
+	return result[0], scanner.Err()
 }
