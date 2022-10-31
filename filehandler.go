@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"syscall"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func genFileInfos(path string, di fs.DirEntry, err error) error {
@@ -51,8 +53,26 @@ func newFiles(path string, owner string) {
 		os.Exit(1)
 	}
 	if current > last {
-		fmt.Printf("%d new genFileInfos created by %s", current, owner)
+		log.Info("%d new files created by %s", current-last, owner)
 	}
+	if err := updateLastNumFileName(lastNumFileName, current); err != nil {
+		log.Error(err)
+	}
+}
+
+func updateLastNumFileName(path string, fileNum int) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(strconv.Itoa(fileNum))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func readIntFromFile(path string) (int, error) {
@@ -60,6 +80,7 @@ func readIntFromFile(path string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanWords)
