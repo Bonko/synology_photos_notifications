@@ -44,20 +44,22 @@ func fileOwner(di fs.DirEntry) (string, error) {
 	return usr.Username, nil
 }
 
-func newFiles(path string, owner string) {
+func newFiles(path string, owner string) (int, error) {
 	current := len(filesByOwner[owner])
 	lastNumFileName := fmt.Sprintf("%s/last_num_files_%s", path, owner)
 	last, err := readIntFromFile(lastNumFileName)
 	if err != nil && last != -1 {
-		fmt.Print(err)
-		os.Exit(1)
+		return -1, err
 	}
+	newFiles := -2
 	if current > 0 && current > last {
-		log.Infof("%d new files created by %s", current-last, owner)
+		newFiles = current - last
+		log.Infof("%d new files created by %s", newFiles, owner)
 	}
 	if err := updateLastNumFileName(lastNumFileName, current); err != nil {
-		log.Error(err)
+		return newFiles, err
 	}
+	return newFiles, nil
 }
 
 func updateLastNumFileName(path string, fileNum int) error {
