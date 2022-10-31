@@ -45,19 +45,19 @@ func main() {
 		if err != nil {
 			log.Errorf("Error getting number of new files: %q", err)
 		}
-		notifyUsers(config.Rootpath, owner, numNewFiles)
+		notifyUsers(owner, numNewFiles, config)
 	}
 }
 
-func notifyUsers(path, owner string, numNewFiles int) {
+func notifyUsers(owner string, numNewFiles int, config *Config) {
 	if numNewFiles < 0 {
 		log.Infof("No new files uploaded by user %s", owner)
 		return
 	}
-	msg := fmt.Sprintf("%s uploaded %d new files to folder %s", owner, numNewFiles, path)
-	for o := range filesByOwner {
-		log.Infof("Notifying %s: %s", o, msg)
-		//if o == owner {
+	msg := fmt.Sprintf("%s uploaded %d new files to folder %s", owner, numNewFiles, config.Rootpath)
+	for _, user := range config.Users {
+		log.Infof("Notifying %s: %s", user.name, msg)
+		//if user.name == owner {
 		//	// Don't notify user about self-uploaded files
 		//	continue
 		//}
