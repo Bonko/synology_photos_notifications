@@ -53,7 +53,7 @@ func newFiles(path string, owner string) {
 		os.Exit(1)
 	}
 	if current > 0 && current > last {
-		log.Info("%d new files created by %s", current-last, owner)
+		log.Infof("%d new files created by %s", current-last, owner)
 	}
 	if err := updateLastNumFileName(lastNumFileName, current); err != nil {
 		log.Error(err)
