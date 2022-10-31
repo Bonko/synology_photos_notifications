@@ -55,6 +55,7 @@ func newFiles(path string, owner string) (int, error) {
 	if err != nil && last != -1 {
 		return -1, err
 	}
+	// TODO: don't count lastNumFileName into number of files
 	newFiles := -2
 	if current > 0 && current > last {
 		newFiles = current - last
