@@ -36,5 +36,4 @@ func main() {
 	fmt.Println(len(filesByOwner["bonko"]))
 
 	newFiles(path, "bonko")
-
 }
