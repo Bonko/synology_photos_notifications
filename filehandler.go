@@ -41,6 +41,10 @@ func fileOwner(di fs.DirEntry) (string, error) {
 	uid := stat.Uid
 	u := strconv.FormatUint(uint64(uid), 10)
 	usr, err := user.LookupId(u)
+	if err != nil {
+		log.Infof("User lookup failed, returning UID instead: %s", u)
+		return u, nil
+	}
 	return usr.Username, nil
 }
 
