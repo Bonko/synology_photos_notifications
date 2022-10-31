@@ -48,11 +48,11 @@ func newFiles(path string, owner string) {
 	current := len(filesByOwner[owner])
 	lastNumFileName := fmt.Sprintf("%s/last_num_files_%s", path, owner)
 	last, err := readIntFromFile(lastNumFileName)
-	if err != nil {
+	if err != nil && last != -1 {
 		fmt.Print(err)
 		os.Exit(1)
 	}
-	if current > last {
+	if current > 0 && current > last {
 		log.Info("%d new files created by %s", current-last, owner)
 	}
 	if err := updateLastNumFileName(lastNumFileName, current); err != nil {
@@ -78,7 +78,7 @@ func updateLastNumFileName(path string, fileNum int) error {
 func readIntFromFile(path string) (int, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 	defer file.Close()
 
