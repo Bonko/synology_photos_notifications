@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
@@ -26,9 +25,13 @@ type FileInfo struct {
 var filesByOwner = make(map[string][]FileInfo)
 
 func main() {
-	path := os.Getenv("PHOTO_DIR")
+	config, err := NewConfig("config.yml")
+	if err != nil {
+		log.Error(err)
+	}
+	//path := os.Getenv("PHOTO_DIR")
 
-	err := filepath.WalkDir(path, genFileInfos)
+	err = filepath.WalkDir(config.Rootpath, genFileInfos)
 	if err != nil {
 		log.Println(err)
 	}
@@ -38,11 +41,11 @@ func main() {
 
 	for owner := range filesByOwner {
 		fmt.Print(owner)
-		numNewFiles, err := newFiles(path, owner)
+		numNewFiles, err := newFiles(config.Rootpath, owner)
 		if err != nil {
 			log.Errorf("Error getting number of new files: %q", err)
 		}
-		notifyUsers(path, owner, numNewFiles)
+		notifyUsers(config.Rootpath, owner, numNewFiles)
 	}
 }
 
