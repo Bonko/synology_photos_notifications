@@ -17,6 +17,11 @@ users:
 
 //type DirInfo *map[string][]FileInfo
 
+/*
+TODO:
+- send mail notification
+- new files per subdir
+*/
 type FileInfo struct {
 	Dir  string
 	Name string
@@ -36,8 +41,8 @@ func main() {
 		log.Println(err)
 	}
 
-	fmt.Println(filesByOwner["bonko"])
-	fmt.Println(len(filesByOwner["bonko"]))
+	//fmt.Println(filesByOwner["bonko"])
+	//fmt.Println(len(filesByOwner["bonko"]))
 
 	for owner := range filesByOwner {
 		fmt.Print(owner)
@@ -56,11 +61,10 @@ func notifyUsers(owner string, numNewFiles int, config *Config) {
 	}
 	msg := fmt.Sprintf("%s uploaded %d new files to folder %s", owner, numNewFiles, config.Rootpath)
 	for _, user := range config.Users {
-		log.Infof("Notifying %s: %s", user.name, msg)
 		//if user.name == owner {
 		//	// Don't notify user about self-uploaded files
 		//	continue
 		//}
-
+		log.Infof("Notifying %s: %q", user.name, msg)
 	}
 }
