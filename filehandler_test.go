@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 	"testing"
 )
 
@@ -100,7 +101,20 @@ func createTestdata() string {
 		}
 	}
 
-	// TODO: create last_num_.. files
+	u, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	last_num_filepath := fmt.Sprintf("%s/last_num_%s", tmp, u.Username)
+	file, err := os.Create(last_num_filepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
 
+	_, err = file.WriteString(strconv.Itoa(1))
+	if err != nil {
+		log.Fatal(err)
+	}
 	return tmp
 }
