@@ -33,8 +33,18 @@ func Test_readIntFromFile(t *testing.T) {
 }
 
 func Test_newFiles(t *testing.T) {
-	// TODO: implement
-	t.SkipNow()
+	dir := createTestdata()
+	defer os.RemoveAll(dir)
+
+	err := filepath.WalkDir(dir, genFileInfos)
+
+	u, err := user.Current()
+	assert.NoError(t, err)
+
+	fileNum, err := newFiles(dir, u.Username)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 5, fileNum)
 }
 
 func Test_genFileInfos(t *testing.T) {
