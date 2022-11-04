@@ -47,6 +47,21 @@ func Test_newFiles(t *testing.T) {
 	assert.Equal(t, 5, fileNum)
 }
 
+func Test_newFilesFirstTimeUploader(t *testing.T) {
+	dir := createTestFiles()
+	defer os.RemoveAll(dir)
+
+	err := filepath.WalkDir(dir, genFileInfos)
+
+	u, err := user.Current()
+	assert.NoError(t, err)
+
+	fileNum, err := newFiles(dir, u.Username)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 6, fileNum)
+}
+
 func Test_genFileInfos(t *testing.T) {
 	// setup
 	dir := createTestdataFull(1)
