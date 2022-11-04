@@ -57,7 +57,7 @@ func lastNumFileName(path, owner string) string {
 func newFiles(path string, owner string) (int, error) {
 	current := len(filesByOwner[owner])
 	last, err := readIntFromFile(lastNumFileName(path, owner))
-	if err != nil && last != -1 {
+	if err != nil && last != 0 {
 		return -1, err
 	}
 	newFiles := -2
@@ -89,7 +89,7 @@ func updateLastNumFileName(path string, fileNum int) error {
 func readIntFromFile(path string) (int, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	defer file.Close()
 
@@ -100,7 +100,7 @@ func readIntFromFile(path string) (int, error) {
 		x, err := strconv.Atoi(scanner.Text())
 
 		if err != nil {
-			return 0, err
+			return -1, err
 		}
 		result = append(result, x)
 	}
