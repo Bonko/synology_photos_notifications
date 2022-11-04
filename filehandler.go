@@ -21,10 +21,12 @@ func genFileInfos(path string, di fs.DirEntry, err error) error {
 	if err != nil {
 		return err
 	}
-
 	current := FileInfo{
 		Dir:  filepath.Dir(path),
 		Name: filepath.Base(path),
+	}
+	if path == lastNumFileName(current.Dir, owner) {
+		return nil
 	}
 
 	filesByOwner[owner] = append(filesByOwner[owner], current)
@@ -48,20 +50,22 @@ func fileOwner(di fs.DirEntry) (string, error) {
 	return usr.Username, nil
 }
 
+func lastNumFileName(path, owner string) string {
+	return fmt.Sprintf("%s/last_num_files_%s", path, owner)
+}
+
 func newFiles(path string, owner string) (int, error) {
 	current := len(filesByOwner[owner])
-	lastNumFileName := fmt.Sprintf("%s/last_num_files_%s", path, owner)
-	last, err := readIntFromFile(lastNumFileName)
+	last, err := readIntFromFile(lastNumFileName(path, owner))
 	if err != nil && last != -1 {
 		return -1, err
 	}
-	// TODO: don't count lastNumFileName into number of files
 	newFiles := -2
 	if current > 0 && current > last {
 		newFiles = current - last
 		log.Infof("%d new files created by %s", newFiles, owner)
 	}
-	if err := updateLastNumFileName(lastNumFileName, current); err != nil {
+	if err := updateLastNumFileName(lastNumFileName(path, owner), current); err != nil {
 		return newFiles, err
 	}
 	return newFiles, nil

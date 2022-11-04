@@ -105,8 +105,7 @@ func createTestdata() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	last_num_filepath := fmt.Sprintf("%s/last_num_%s", tmp, u.Username)
-	file, err := os.Create(last_num_filepath)
+	file, err := os.Create(lastNumFileName(tmp, u.Username))
 	if err != nil {
 		log.Fatal(err)
 	}
