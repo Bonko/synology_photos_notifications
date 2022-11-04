@@ -33,7 +33,7 @@ func Test_readIntFromFile(t *testing.T) {
 }
 
 func Test_newFiles(t *testing.T) {
-	dir := createTestdata()
+	dir := createTestdataFull(1)
 	defer os.RemoveAll(dir)
 
 	err := filepath.WalkDir(dir, genFileInfos)
@@ -49,7 +49,7 @@ func Test_newFiles(t *testing.T) {
 
 func Test_genFileInfos(t *testing.T) {
 	// setup
-	dir := createTestdata()
+	dir := createTestdataFull(1)
 	defer os.RemoveAll(dir)
 
 	assert.Empty(t, filesByOwner)
@@ -65,7 +65,12 @@ func Test_genFileInfos(t *testing.T) {
 	assert.Equal(t, 6, len(filesByOwner[u.Username]))
 }
 
-func createTestdata() string {
+func createTestdataFull(lastNumFiles int) string {
+	dir := createTestFiles()
+	createTestdataLastNumFiles(dir, lastNumFiles)
+	return dir
+}
+func createTestFiles() string {
 	/*
 		testdata
 		├── folder1
@@ -110,20 +115,21 @@ func createTestdata() string {
 			//}
 		}
 	}
-
+	return tmp
+}
+func createTestdataLastNumFiles(dir string, num int) {
 	u, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
-	file, err := os.Create(lastNumFileName(tmp, u.Username))
+	file, err := os.Create(lastNumFileName(dir, u.Username))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(strconv.Itoa(1))
+	_, err = file.WriteString(strconv.Itoa(num))
 	if err != nil {
 		log.Fatal(err)
 	}
-	return tmp
 }
