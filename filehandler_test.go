@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"os/user"
 	"path/filepath"
 	"testing"
 )
@@ -45,8 +46,12 @@ func Test_genFileInfos(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.NotEmpty(t, filesByOwner)
-	// TODO: more assertions
 
+	u, err := user.Current()
+	assert.NoError(t, err)
+
+	//assert.Equal(t, 2, len(filesByOwner["999"]))
+	assert.Equal(t, 6, len(filesByOwner[u.Username]))
 }
 
 func createTestdata() string {
@@ -77,19 +82,21 @@ func createTestdata() string {
 			log.Fatal(err)
 		}
 		for _, file := range files {
-			owner := os.Getuid()
-			if file == "file2.jpg" {
-				owner = 999
-			}
+
 			filename := fmt.Sprintf("%s/%s", dir, file)
 			_, err := os.Create(filename)
 			if err != nil {
 				log.Fatal(err)
 			}
-			err = os.Chown(filename, owner, os.Getgid())
-			if err != nil {
-				log.Fatal(err)
-			}
+			// chown requires root privileges :(
+			//owner := os.Getuid()
+			//if file == "2.jpg" {
+			//	owner = 999
+			//}
+			//err = os.Chown(filename, owner, os.Getgid())
+			//if err != nil {
+			//	log.Fatal(err)
+			//}
 		}
 	}
 
