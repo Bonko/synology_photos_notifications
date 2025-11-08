@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strconv"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_updateLastNumFileName(t *testing.T) {
@@ -37,6 +38,7 @@ func Test_newFiles(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	err := filepath.WalkDir(dir, genFileInfos)
+	assert.NoError(t, err)
 
 	u, err := user.Current()
 	assert.NoError(t, err)
@@ -52,6 +54,7 @@ func Test_newFilesFirstTimeUploader(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	err := filepath.WalkDir(dir, genFileInfos)
+	assert.NoError(t, err)
 
 	u, err := user.Current()
 	assert.NoError(t, err)
