@@ -11,8 +11,8 @@ type Config struct {
 	Users    []User `yaml:"users"`
 }
 type User struct {
-	name  string `yaml:"name"`
-	email string `yaml:"email"`
+	Name  string `yaml:"name"`
+	Email string `yaml:"email"`
 }
 
 // NewConfig returns a new decoded Config struct

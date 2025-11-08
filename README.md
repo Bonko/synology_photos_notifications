@@ -72,6 +72,31 @@ The tool creates state files in the root directory to track file counts:
 - Location: Same as `rootpath`
 - Content: A single integer representing the last known file count for that owner
 
+## Current Implementation Status
+
+### ✅ Implemented
+
+- **File scanning and owner detection**: Successfully scans directory tree and identifies file owners by UID
+- **File tracking**: Groups files by owner in memory (`filesByOwner` map)
+- **Change detection**: Compares current file counts with stored counts to detect new uploads
+- **State persistence**: Stores and retrieves file counts per owner in `last_num_files_<owner>` files
+- **Notification structure**: `notifyUsers()` function exists and iterates through configured users
+- **Configuration loading**: YAML config file parsing works for `rootpath` and `users` list
+- **User struct field visibility**: User struct fields (`Name`, `Email`) are exported and properly unmarshaled from YAML
+- **Self-notification filtering**: Users are automatically skipped from receiving notifications about their own uploads
+- **Comprehensive test suite**: Tests cover notification logic, edge cases, multi-owner scenarios, and file handling
+
+### ❌ Missing / Incomplete
+
+1. **Actual notification sending**: The `notifyUsers()` function only logs messages to console using `log.Infof()`. It does not:
+   - Send emails (despite email addresses being in config)
+   - Send any actual notifications to users
+   - Use any notification channels (email, webhooks, etc.)
+
+2. **Email functionality**: No email sending implementation exists. The TODO comment mentions "send mail notification" but it's not implemented.
+
+3. **Error handling**: If config loading fails, the program logs an error but continues execution, which could cause issues.
+
 ## Development
 
 ### Running Tests

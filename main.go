@@ -61,10 +61,10 @@ func notifyUsers(owner string, numNewFiles int, config *Config) {
 	}
 	msg := fmt.Sprintf("%s uploaded %d new files to folder %s", owner, numNewFiles, config.Rootpath)
 	for _, user := range config.Users {
-		//if user.name == owner {
-		//	// Don't notify user about self-uploaded files
-		//	continue
-		//}
-		log.Infof("Notifying %s: %q", user.name, msg)
+		if user.Name == owner {
+			// Don't notify user about self-uploaded files
+			continue
+		}
+		log.Infof("Notifying %s: %q", user.Name, msg)
 	}
 }
